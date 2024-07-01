@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a48645ceaea3734ca032571d61b3be6, type: 3}
+  m_Name: M4A1
+  m_EditorClassIdentifier: 
+  name: 
+  bulletDamage: 0
+  maxDamageRange: 0
+  minDamageRange: 0
+  fireRate: 0
+  maxBulletSpread: 0
+  minBulletSpread: 0
+  reloadTime: 0
+  isReloading: 0
+  isFullAuto: 1
+  isSemiAuto: 0
+  isBurst: 0
+  magSize: 0
+  maxAmmoAmount: 0
+  currentAmmoAmount: 0
