@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 public class PlayerBase : MonoBehaviour
 {
@@ -11,12 +12,10 @@ public class PlayerBase : MonoBehaviour
         inputManager = FindObjectOfType<InputManager>();
         rb = GetComponent<Rigidbody>();
         col = GetComponentInChildren<CapsuleCollider>();
-        cam = GetComponentInChildren<Camera>();
     }
 
     public virtual void Update()
-    {
-        AimControl();
+    {      
         SprintControl();
     }
 
@@ -24,28 +23,28 @@ public class PlayerBase : MonoBehaviour
     {
         GroundControl();
         GroundCheck();
+        JumpControl();
     }
 
     private void GroundControl()
     {
         if (!isGrounded)
         {
-            // Minimize directional control
-            // Allow air control
+            
         }
 
         // Get camera forward relative
-        Vector3 camForward = cam.transform.forward;
+        Vector3 camForward = orientation.forward;
         camForward.y = 0f;
         camForward.Normalize();
 
         // Get camera right relative
-        Vector3 camRight = cam.transform.right;
+        Vector3 camRight = orientation.right;
         camRight.y = 0f;
-        camRight.Normalize();
+        camRight.Normalize(); 
 
         // Calculate relative direction
-        Vector3 relativeDirection = (inputManager.moveInput.x * camRight +  inputManager.moveInput.y * camForward);
+        Vector3 relativeDirection = inputManager.moveInput.x * camRight + inputManager.moveInput.y * camForward;
 
         // Calculate speed
         currentSpeed = strafeSpeed;
@@ -73,10 +72,12 @@ public class PlayerBase : MonoBehaviour
         if (Physics.Raycast(transform.position, Vector3.down, out hit, distanceToGround + 0.1f, groundLayer))
         {
             isGrounded = true;
+            canJump = true;
         }
         else
         {
             isGrounded = false;
+            canJump = false;
         }
 
         // Activate gravity
@@ -100,33 +101,7 @@ public class PlayerBase : MonoBehaviour
 
     private void GravityControl()
     {
-        rb.velocity -= Vector3.up * gravity * Time.fixedDeltaTime;
-    }
-
-    private void AimControl()
-    {
-        if (inputManager.isUsingGamepad)
-        {
-            schemeSensitivityX = controllerSensitivityX;
-            schemeSensitivityY = controllerSensitivityY;
-        }
-        else if (inputManager.isUsingKBM)
-        {
-            schemeSensitivityX = mouseAimX;
-            schemeSensitivityY = mouseAimY;
-        }
-
-        float aimInputX = inputManager.aimInput.x * schemeSensitivityX * Time.deltaTime;
-        float aimInputY = inputManager.aimInput.y * schemeSensitivityY * Time.deltaTime;
-
-        aimX += aimInputX;
-        aimY -= aimInputY;
-        aimY = Mathf.Clamp(aimY, -90f, 90f);
-
-        cam.transform.localRotation = Quaternion.Euler(aimY, 0f, 0f);
-        transform.rotation = Quaternion.Euler(0f, aimX, 0f);
-
-        Cursor.lockState = CursorLockMode.Locked;
+        rb.velocity += Vector3.down * gravity * Time.fixedDeltaTime;
     }
 
     private void SprintControl()
@@ -175,13 +150,18 @@ public class PlayerBase : MonoBehaviour
         }
     }
 
+    private void JumpControl()
+    {
+         
+    }
+
     // Components
     private InputManager inputManager;
     private Rigidbody rb;
     private CapsuleCollider col;
-    private Camera cam;
+    public Transform orientation;
 
-    // Movement
+    [Header("Movement")]
     public float currentSpeed;
     public float strafeSpeed;
     public float sprintSpeedMultiplier;
@@ -200,14 +180,8 @@ public class PlayerBase : MonoBehaviour
     // Gravity
     private float gravity = 50f;
 
-    // Camera Aim
-    public float controllerSensitivityX;
-    public float controllerSensitivityY;
-    public float mouseAimX;
-    public float mouseAimY;
-    private float aimX;
-    private float aimY;
-    private float schemeSensitivityX;
-    private float schemeSensitivityY;
-    
+    [Header("Jump")]
+    public float jumpForce;
+    public float jumpCooldown;
+    public bool canJump;
 }
